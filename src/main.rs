@@ -2,7 +2,7 @@ use actix_web::{web, App, HttpResponse, HttpServer, Responder, get, HttpRequest}
 use std::env;
 use base64::decode;
 use serde::Deserialize;
-use uuid::{Uuid, serde::urn};
+use uuid::{Uuid};
 
 #[derive(Deserialize)]
 struct Info {
