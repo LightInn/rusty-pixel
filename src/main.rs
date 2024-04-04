@@ -25,7 +25,7 @@ async fn main() -> std::io::Result<()> {
     println!("Starting server at http://{}:{}", server_host, server_port);
 
     let app_state = web::Data::new(AppState {
-        db: init(&database_url).expect("Failed to initialize database"),
+        db: init(&database_url).await.expect("Failed to initialize database"),
     });
 
     HttpServer::new(move || {
