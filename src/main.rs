@@ -1,12 +1,12 @@
 use actix_web::{web, App, HttpResponse, HttpServer, Responder, get, HttpRequest};
 use std::env;
+use base64::decode;
 use serde::Deserialize;
 use uuid::{Uuid, serde::urn};
 
 #[derive(Deserialize)]
 struct Info {
-    #[serde(with = "urn")]
-    uuid: Uuid,
+    uuid: String,
 }
 
 
@@ -24,10 +24,17 @@ async fn pixel(req: HttpRequest, info: web::Path<Info>) -> impl Responder {
     // Implémenter le logging dans un système de fichiers ou une base de données avec anonymisation de l'IP.
     println!("Anonymized IP: {}, UUID: {}", ip_addr, info.uuid);
 
-    // Retourner un pixel transparent avec le type MIME approprié.
+
+    // Base64 encoded 1x1 transparent PNG image
+    let base64_data = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+
+    // Decode the base64 string
+    let pixel_data = decode(base64_data)
+        .expect("Base64 decode error");
+
     HttpResponse::Ok()
-        .content_type("image/gif")
-        .body("GIF89a\\x01\\x00\\x01\\x00\\x80\\xff\\x00\\xff\\xff\\xff\\x00\\x00\\x00,\\x00\\x00\\x00\\x00\\x01\\x00\\x01\\x00\\x00\\x02\\x02L\\x01\\x00;")
+        .content_type("image/png")
+        .body(pixel_data)
 }
 
 #[actix_web::main]
