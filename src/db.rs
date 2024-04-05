@@ -1,6 +1,6 @@
 // db.rs
 use rusqlite::{params, Result};
-use tokio_rusqlite::{Connection as AsyncConnection};
+use tokio_rusqlite::{Connection as AsyncConnection, Connection};
 
 /// Initializes the database by opening a connection to the given database URL and
 /// creating necessary tables if they do not exist.
@@ -42,7 +42,7 @@ async fn create_tables(conn: &AsyncConnection) -> Result<()> {
                 timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
             )",
             [],
-        );
+        ).unwrap();
 
 
         // Table to store each connection to the pixel with associated
@@ -56,7 +56,7 @@ async fn create_tables(conn: &AsyncConnection) -> Result<()> {
             user_agent TEXT
         )",
             [],
-        );
+        ).unwrap();
     }).await;
 
 
@@ -73,7 +73,7 @@ async fn create_tables(conn: &AsyncConnection) -> Result<()> {
 /// # Returns
 ///
 /// A result indicating success or containing an error.
-pub async fn insert_pixel(conn: &AsyncConnection, uuid: &str) -> Result<()> {
+pub async fn insert_pixel(conn: &AsyncConnection, uuid: String) -> Result<()> {
     let uuid = uuid.to_string();
 
 
@@ -81,7 +81,7 @@ pub async fn insert_pixel(conn: &AsyncConnection, uuid: &str) -> Result<()> {
         conn.execute(
             "INSERT INTO pixel (uuid) VALUES (?1)",
             params![uuid],
-        );
+        ).unwrap();
     }).await;
 
     Ok(())
@@ -106,6 +106,8 @@ pub async fn insert_pixel_connection(
     ip: &str,
     user_agent: &str,
 ) -> Result<()> {
+
+
     let uuid = uuid.to_string();
     let ip = ip.to_string();
     let user_agent = user_agent.to_string();
@@ -115,7 +117,7 @@ pub async fn insert_pixel_connection(
         conn.execute(
             "INSERT INTO pixel_connection (uuid, ip, user_agent) VALUES (?1, ?2, ?3)",
             params![uuid, ip, user_agent],
-        );
+        ).unwrap();
     }).await;
 
 

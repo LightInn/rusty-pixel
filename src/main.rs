@@ -21,7 +21,7 @@ async fn main() -> std::io::Result<()> {
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let server_port = env::var("SERVER_PORT").unwrap_or_else(|_| "8080".to_string());
     let server_host = env::var("SERVER_HOST").unwrap_or_else(|_| "127.0.0.1".to_string());
-    
+
     println!("Starting server at http://{}:{}", server_host, server_port);
 
     let app_state = web::Data::new(AppState {

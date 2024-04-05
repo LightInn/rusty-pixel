@@ -2,17 +2,33 @@ use actix_web::{get, web, App, HttpResponse, HttpServer, Responder, HttpRequest}
 use base64::decode;
 use uuid::Uuid;
 use web::Data;
-use crate::models::{AppState, Info};
+use crate::db;
+
+
+use crate::models::{AppState, Link};
 
 #[get("/generate-url")]
-pub async fn generate_url() -> impl Responder {
+pub async fn generate_url(data: web::Data<AppState>) -> impl Responder {
+    let db = &data.db;
+
+
     let uuid = Uuid::new_v4();
+    // uuid to string
+    let uuidStr = uuid.to_string();
+
+
     // Ici, vous pourriez insérer le nouveau UUID dans la base de données avant de le retourner
-    HttpResponse::Ok().body(format!("URL: /pixel/{}", uuid))
+    // à l'utilisateur en JSON
+
+    db::insert_pixel(db, uuidStr).await.expect("Failed to insert pixel");
+
+
+    HttpResponse::Ok().json(Link { uuid: (&uuid).to_string() })
 }
 
+
 #[get("/pixel/{uuid}")]
-pub async fn pixel(req: HttpRequest, info: web::Path<Info>) -> impl Responder {
+pub async fn pixel(req: HttpRequest, info: web::Path<Link>) -> impl Responder {
     let ip_addr = req
         .peer_addr()
         .map_or_else(|| "Unknown".into(), |addr| addr.ip().to_string());
