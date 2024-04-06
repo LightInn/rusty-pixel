@@ -8,8 +8,8 @@ use crate::db;
 
 use crate::models::{AppState, Link};
 
-#[get("/generate-url")]
-pub async fn generate_url(data: web::Data<AppState>) -> impl Responder {
+#[get("/generate")]
+pub async fn generate(data: web::Data<AppState>) -> impl Responder {
     let db = &data.db;
 
 
@@ -24,7 +24,7 @@ pub async fn generate_url(data: web::Data<AppState>) -> impl Responder {
     db::insert_pixel(db, uuidStr).await.expect("Failed to insert pixel");
 
 
-    HttpResponse::Ok().json(Link { uuid: (&uuid).to_string() })
+    HttpResponse::Ok().json(Link { uuid: (&uuid).to_string(), url: format!("/pixel/{}", (&uuid).to_string()) })
 }
 
 
@@ -72,12 +72,24 @@ pub async fn list_pixels(data: Data<AppState>) -> impl Responder {
 
     let all_pixel = db::fetch_all_pixels(db).await.expect("Failed to fetch pixels");
 
+    // sort the pixels by timestamp
+    let mut all_pixel = all_pixel;
+    all_pixel.sort_by(|a, b| b.timestamp.cmp(&a.timestamp));
+
+
     for pixel in all_pixel {
+
+
         // link to view all connections for a specific pixel
-        response.push_str(&format!("<li><a href=\"/pixel/connections/{}\">{}</a></li>", pixel, pixel));
+        response.push_str(&format!(
+            "<li> Date : {}  <a href=\"/pixel/connections/{}\">  uuid : {} </a></li>",
+            pixel.timestamp, pixel.uuid, pixel.uuid
+        ));
     }
 
-    response.push_str("</ul></body></html>");
+    response.push_str("</ul>");
+    // buton to generate a new pixel
+    response.push_str("<a href=\"/generate\">Generate a new pixel</a></body></html>");
 
     HttpResponse::Ok().body(response)
 }

@@ -6,6 +6,7 @@ use tokio_rusqlite::{Connection as AsyncConnection};
 #[derive(Serialize, Deserialize)]
 pub struct Link {
     pub uuid: String,
+    pub url : String,
 }
 
 // Ajoutez toutes les autres structures de données nécessaires.
@@ -24,3 +25,10 @@ pub struct PixelConnection {
     pub timestamp: String,
 }
 
+
+
+#[derive(Debug)]
+pub struct Pixel {
+    pub uuid: String,
+    pub timestamp: String,
+}

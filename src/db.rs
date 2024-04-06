@@ -1,7 +1,7 @@
 // db.rs
 use rusqlite::{params, Result};
 use tokio_rusqlite::{Connection as AsyncConnection, Connection};
-use crate::models::PixelConnection;
+use crate::models::{Pixel, PixelConnection};
 
 /// Initializes the database by opening a connection to the given database URL and
 /// creating necessary tables if they do not exist.
@@ -125,11 +125,16 @@ pub async fn insert_pixel_connection(
 
 
 // fetch all pixels from the database
-pub async fn fetch_all_pixels(conn: &AsyncConnection) -> Result<Vec<String>> {
+pub async fn fetch_all_pixels(conn: &AsyncConnection) -> Result<Vec<Pixel>> {
     let pixel = conn.call_unwrap(move |conn| {
         let mut stmt = conn.prepare("SELECT uuid, timestamp FROM pixel").unwrap();
         let pixel_iter = stmt.query_map([], |row| {
-            Ok(row.get(0)?)
+            Ok(
+                Pixel {
+                    uuid: row.get(0)?,
+                    timestamp: row.get(1)?,
+                }
+            )
         }).unwrap();
 
 

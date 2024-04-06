@@ -11,7 +11,7 @@ mod handler;
 mod models;
 
 use db::{init};
-use handler::{generate_url, track_pixel};
+use handler::{generate, track_pixel};
 use models::AppState;
 use crate::handler::{list_pixel_connections, list_pixels};
 
@@ -32,7 +32,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(app_state.clone())
-            .service(generate_url)
+            .service(generate)
             .service(track_pixel)
             .service(list_pixels)
             .service(list_pixel_connections)
