@@ -1,5 +1,5 @@
-use actix_web::{get, web, App, HttpResponse, HttpServer, Responder, HttpRequest};
-use actix_web::cookie::time::error::Format::StdIo;
+use actix_web::{get, web, HttpResponse, Responder, HttpRequest};
+
 use base64::decode;
 use uuid::Uuid;
 use web::Data;

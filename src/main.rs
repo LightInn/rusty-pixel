@@ -1,10 +1,10 @@
-use actix_web::{get, web, App, HttpResponse, HttpServer, Responder, HttpRequest};
-use base64::decode;
+use actix_web::{web, App, HttpServer};
+
 use dotenv::dotenv;
-use rusqlite::{Connection, params};
-use serde::Deserialize;
+
+
 use std::env;
-use uuid::Uuid;
+
 
 mod db;
 mod handler;

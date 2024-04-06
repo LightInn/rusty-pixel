@@ -1,6 +1,6 @@
 // db.rs
 use rusqlite::{params, Result};
-use tokio_rusqlite::{Connection as AsyncConnection, Connection};
+use tokio_rusqlite::{Connection as AsyncConnection};
 use crate::models::{Pixel, PixelConnection};
 
 /// Initializes the database by opening a connection to the given database URL and
