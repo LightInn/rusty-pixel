@@ -106,8 +106,6 @@ pub async fn insert_pixel_connection(
     ip: &str,
     user_agent: &str,
 ) -> Result<()> {
-
-
     let uuid = uuid.to_string();
     let ip = ip.to_string();
     let user_agent = user_agent.to_string();
@@ -125,3 +123,23 @@ pub async fn insert_pixel_connection(
 }
 
 
+// fetch all pixels from the database
+pub async fn fetch_all_pixels(conn: &AsyncConnection) -> Result<Vec<String>> {
+    let pixel = conn.call_unwrap(move |conn| {
+        let mut stmt = conn.prepare("SELECT uuid, timestamp FROM pixel").unwrap();
+        let pixel_iter = stmt.query_map([], |row| {
+            Ok(row.get(0)?)
+        }).unwrap();
+
+
+        let mut pixels = Vec::new();
+        for pixel in pixel_iter {
+            pixels.push(pixel.unwrap());
+        }
+
+        pixels
+    }).await;
+
+    println!("{:?}", pixel);
+    Ok(pixel)
+}

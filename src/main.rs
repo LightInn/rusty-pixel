@@ -11,8 +11,9 @@ mod handler;
 mod models;
 
 use db::{init};
-use handler::{generate_url, pixel};
+use handler::{generate_url, track_pixel};
 use models::AppState;
+use crate::handler::list_pixels;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -32,7 +33,8 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(app_state.clone())
             .service(generate_url)
-            .service(pixel)
+            .service(track_pixel)
+            .service(list_pixels)
     })
         .bind(format!("{}:{}", server_host, server_port))?
         .run()

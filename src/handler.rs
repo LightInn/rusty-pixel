@@ -1,4 +1,5 @@
 use actix_web::{get, web, App, HttpResponse, HttpServer, Responder, HttpRequest};
+use actix_web::cookie::time::error::Format::StdIo;
 use base64::decode;
 use uuid::Uuid;
 use web::Data;
@@ -28,7 +29,7 @@ pub async fn generate_url(data: web::Data<AppState>) -> impl Responder {
 
 
 #[get("/pixel/{uuid}")]
-pub async fn pixel(req: HttpRequest, info: web::Path<Link>, data: web::Data<AppState>) -> impl Responder {
+pub async fn track_pixel(req: HttpRequest, info: web::Path<Link>, data: web::Data<AppState>) -> impl Responder {
     let ip_addr = req
         .peer_addr()
         .map_or_else(|| "Unknown".into(), |addr| addr.ip().to_string());
@@ -64,3 +65,20 @@ pub async fn pixel(req: HttpRequest, info: web::Path<Link>, data: web::Data<AppS
 
 
 
+// create a page to list all the pixels in the database
+#[get("/pixels")]
+pub async fn list_pixels(data: Data<AppState>) -> impl Responder {
+    let db = &data.db;
+
+    let mut response = String::from("<html><head><title>Pixel List</title></head><body><h1>Pixel List</h1><ul>");
+
+    let all_pixel = db::fetch_all_pixels(db).await.expect("Failed to fetch pixels");
+
+    for pixel in all_pixel {
+        response.push_str(&format!("<li>{}</li>", pixel));
+    }
+
+    response.push_str("</ul></body></html>");
+
+    HttpResponse::Ok().body(response)
+}
