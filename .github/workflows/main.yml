@@ -8,7 +8,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -24,9 +24,6 @@ jobs:
           profile: minimal
           toolchain: ${{ matrix.rust }}
           override: true
-
-      - name: Build
-        run: cargo build --release
       - name: Test
         run: cargo test --all
       - name: Login to Docker Hub
