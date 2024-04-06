@@ -15,13 +15,13 @@ pub async fn generate(data: web::Data<AppState>) -> impl Responder {
 
     let uuid = Uuid::new_v4();
     // uuid to string
-    let uuidStr = uuid.to_string();
+    let uuid_str = uuid.to_string();
 
 
     // Ici, vous pourriez insérer le nouveau UUID dans la base de données avant de le retourner
     // à l'utilisateur en JSON
 
-    db::insert_pixel(db, uuidStr).await.expect("Failed to insert pixel");
+    db::insert_pixel(db, uuid_str).await.expect("Failed to insert pixel");
 
 
     HttpResponse::Ok().json(Link { uuid: (&uuid).to_string(), url: format!("/pixel/{}", (&uuid).to_string()) })
