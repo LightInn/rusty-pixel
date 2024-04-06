@@ -39,7 +39,7 @@ pub async fn track_pixel(req: HttpRequest, info: web::Path<Link>, data: web::Dat
     println!("Anonymized IP: {}, UUID: {}", ip_addr, info.uuid);
 
 
-    let user_agent : String = req
+    let user_agent: String = req
         .headers()
         .get("User-Agent")
         .map_or_else(|| "Unknown".into(), |ua| ua.to_str().unwrap().into());
@@ -49,7 +49,6 @@ pub async fn track_pixel(req: HttpRequest, info: web::Path<Link>, data: web::Dat
 
     // Ici, vous pourriez insérer les informations de connexion dans la base de données.
     db::insert_pixel_connection(&data.db, &*info.uuid, &*ip_addr, &*user_agent).await.expect("Failed to insert pixel connection");
-
 
 
     // Base64 encoded 1x1 transparent PNG image
@@ -64,7 +63,6 @@ pub async fn track_pixel(req: HttpRequest, info: web::Path<Link>, data: web::Dat
 }
 
 
-
 // create a page to list all the pixels in the database
 #[get("/pixels")]
 pub async fn list_pixels(data: Data<AppState>) -> impl Responder {
@@ -75,10 +73,37 @@ pub async fn list_pixels(data: Data<AppState>) -> impl Responder {
     let all_pixel = db::fetch_all_pixels(db).await.expect("Failed to fetch pixels");
 
     for pixel in all_pixel {
-        response.push_str(&format!("<li>{}</li>", pixel));
+        // link to view all connections for a specific pixel
+        response.push_str(&format!("<li><a href=\"/pixel/connections/{}\">{}</a></li>", pixel, pixel));
     }
 
     response.push_str("</ul></body></html>");
 
     HttpResponse::Ok().body(response)
 }
+
+
+// create a page to list all the pixel connections from a specific pixel
+#[get("/pixel/connections/{uuid}")]
+pub async fn list_pixel_connections(data: Data<AppState>, info: web::Path<Link>) -> impl Responder {
+    let db = &data.db;
+
+    println!("UUID: {}", info.uuid);
+
+
+    let mut response = String::from("<html><head><title>Pixel Connections</title></head><body><h1>Pixel Connections</h1><ul>");
+
+    let all_pixel_connections = db::fetch_all_pixel_connections(db, &*info.uuid).await.expect("Failed to fetch pixel connections");
+
+    for connection in all_pixel_connections {
+        response.push_str(&format!("<li>IP: {}, User-Agent: {}, Timestamp: {}</li>", connection.ip, connection.user_agent, connection.timestamp));
+        // response.push_str(&format!("<li>Connection: {}</li>", connection));
+    }
+
+    response.push_str("</ul></body></html>");
+
+    HttpResponse::Ok().body(response)
+}
+
+
+

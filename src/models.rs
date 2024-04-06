@@ -3,8 +3,7 @@ use serde::{Deserialize, Serialize};
 use tokio_rusqlite::{Connection as AsyncConnection};
 
 
-#[derive(Deserialize)]
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct Link {
     pub uuid: String,
 }
@@ -14,11 +13,14 @@ pub struct AppState {
     pub db: AsyncConnection,
 }
 
+
+#[derive(Debug)]
 pub struct PixelConnection {
     pub uuid: String,
+    pub id : i32,
     pub ip: String,
     pub user_agent: String,
     pub referer: String,
-    pub timestamp: i64,
+    pub timestamp: String,
 }
 

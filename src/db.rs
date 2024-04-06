@@ -1,6 +1,7 @@
 // db.rs
 use rusqlite::{params, Result};
 use tokio_rusqlite::{Connection as AsyncConnection, Connection};
+use crate::models::PixelConnection;
 
 /// Initializes the database by opening a connection to the given database URL and
 /// creating necessary tables if they do not exist.
@@ -142,4 +143,45 @@ pub async fn fetch_all_pixels(conn: &AsyncConnection) -> Result<Vec<String>> {
 
     println!("{:?}", pixel);
     Ok(pixel)
+}
+
+
+// fetch all pixel connections from the database
+pub async fn fetch_all_pixel_connections(conn: &AsyncConnection, uuid: &str) -> Result<Vec<PixelConnection>> {
+
+
+
+    let uuid = uuid.to_string();
+
+
+
+    let pixel_connections = conn.call_unwrap(move |conn| {
+        let mut stmt = conn.prepare("SELECT id, ip, timestamp, user_agent FROM pixel_connection WHERE uuid = :uuid").unwrap();
+
+
+        let pixel_connection_iter = stmt.query_map(&[(":uuid", &uuid)], |row| {
+            Ok(PixelConnection {
+                uuid: uuid.to_string(),
+                id : row.get(0)?,
+                ip: row.get(1)?,
+                timestamp: row.get(2)?,
+                user_agent: row.get(3)?,
+                referer: "".to_string(),
+            })
+        }).unwrap();
+
+
+        let mut pixel_connection = Vec::new();
+        for pixel_con in pixel_connection_iter {
+            pixel_connection.push(pixel_con.unwrap()  );
+        }
+
+
+        pixel_connection
+    }).await;
+
+
+    println!(" Get data {:?}", pixel_connections);
+
+    Ok(pixel_connections)
 }

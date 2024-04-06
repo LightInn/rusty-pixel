@@ -13,7 +13,7 @@ mod models;
 use db::{init};
 use handler::{generate_url, track_pixel};
 use models::AppState;
-use crate::handler::list_pixels;
+use crate::handler::{list_pixel_connections, list_pixels};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -35,6 +35,7 @@ async fn main() -> std::io::Result<()> {
             .service(generate_url)
             .service(track_pixel)
             .service(list_pixels)
+            .service(list_pixel_connections)
     })
         .bind(format!("{}:{}", server_host, server_port))?
         .run()
