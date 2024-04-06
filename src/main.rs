@@ -30,6 +30,7 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
+            .app_data(app_state.clone())
             .service(generate_url)
             .service(pixel)
     })

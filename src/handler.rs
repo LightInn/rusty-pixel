@@ -28,7 +28,7 @@ pub async fn generate_url(data: web::Data<AppState>) -> impl Responder {
 
 
 #[get("/pixel/{uuid}")]
-pub async fn pixel(req: HttpRequest, info: web::Path<Link>) -> impl Responder {
+pub async fn pixel(req: HttpRequest, info: web::Path<Link>, data: web::Data<AppState>) -> impl Responder {
     let ip_addr = req
         .peer_addr()
         .map_or_else(|| "Unknown".into(), |addr| addr.ip().to_string());
@@ -36,6 +36,20 @@ pub async fn pixel(req: HttpRequest, info: web::Path<Link>) -> impl Responder {
 
     // Implémenter le logging dans un système de fichiers ou une base de données avec anonymisation de l'IP.
     println!("Anonymized IP: {}, UUID: {}", ip_addr, info.uuid);
+
+
+    let user_agent : String = req
+        .headers()
+        .get("User-Agent")
+        .map_or_else(|| "Unknown".into(), |ua| ua.to_str().unwrap().into());
+
+    println!("User-Agent: {}", user_agent);
+
+
+    // Ici, vous pourriez insérer les informations de connexion dans la base de données.
+    db::insert_pixel_connection(&data.db, &*info.uuid, &*ip_addr, &*user_agent).await.expect("Failed to insert pixel connection");
+
+
 
     // Base64 encoded 1x1 transparent PNG image
     let base64_data = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
@@ -47,3 +61,6 @@ pub async fn pixel(req: HttpRequest, info: web::Path<Link>) -> impl Responder {
         .content_type("image/png")
         .body(pixel_data)
 }
+
+
+
