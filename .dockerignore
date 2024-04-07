@@ -1,0 +1,10 @@
+target/
+bruno/
+db.db3
+.env
+.env.exemple
+.git/
+.gitignore/
+.idea/
+README.md
+renovate.json
