@@ -6,7 +6,7 @@ use tokio_rusqlite::{Connection as AsyncConnection};
 #[derive(Serialize, Deserialize)]
 pub struct Link {
     pub uuid: String,
-    pub url : String,
+    pub url : Option<String>,
 }
 
 // Ajoutez toutes les autres structures de données nécessaires.

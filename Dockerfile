@@ -7,6 +7,7 @@ WORKDIR /usr/src/app
 COPY . .
 RUN cargo build --release --bin rusty-pixel
 
+#FROM scratch as runtime // todo : changer pour opti
 FROM rust:latest as runtime
 ENV SERVER_PORT=3000
 ENV SERVER_HOST=0.0.0.0

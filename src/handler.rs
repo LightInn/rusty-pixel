@@ -24,7 +24,7 @@ pub async fn generate(data: web::Data<AppState>) -> impl Responder {
     db::insert_pixel(db, uuid_str).await.expect("Failed to insert pixel");
 
 
-    HttpResponse::Ok().json(Link { uuid: (&uuid).to_string(), url: format!("/pixel/{}", (&uuid).to_string()) })
+    HttpResponse::Ok().json(Link { uuid: (&uuid).to_string(), url: format!("/pixel/{}", (&uuid).to_string()).into()})
 }
 
 
