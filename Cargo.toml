@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 actix-web = "4.5.1"
-serde = { version = "1.0.197", features = ["derive"] }
+serde = { version = "1.0.198", features = ["derive"] }
 log = "0.4.21"
 uuid = { version = "1.8.0", features = ["v4", "serde"] }
 base64 = "0.21.7"
