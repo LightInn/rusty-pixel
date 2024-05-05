@@ -10,7 +10,7 @@ actix-web = "4.5.1"
 serde = { version = "1.0.200", features = ["derive"] }
 log = "0.4.21"
 uuid = { version = "1.8.0", features = ["v4", "serde"] }
-base64 = "0.21.7"
+base64 = "0.22.0"
 dotenv = "0.15.0"
 rusqlite = { version = "0.31.0", features = ["bundled"] }
 tokio-rusqlite = "0.5.1"
